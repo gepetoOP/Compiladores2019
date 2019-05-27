@@ -1,0 +1,4 @@
+# dune exec src/driver.exe -- -lex examples/p3.tiger
+# OCAMLPARAM: unset
+$ /usr/bin/nproc > /tmp/dune3107a4.output 2> /dev/null
+$ /home/gepeto/.opam/compiladores/bin/ocamlc.opt -config > /tmp/dune3a9f11.output

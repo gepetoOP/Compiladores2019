@@ -1,0 +1,7 @@
+var a := 2
+a := a + 5
+if(a = 7) then
+	b := 3
+else
+	c := 4
+fim

@@ -1,0 +1,8 @@
+function(a,b):
+	a := "Compiladores"
+	b := "UFOP \n"
+	while (a <= b):
+		do a := b -32
+	return a * b;
+
+

@@ -20,9 +20,10 @@
 let spaces = [' ' '\t'] +
 let litint = [ '0' - '9'] +
 
-let alpha = ['A'-'Z' 'a'-'z'] ['_']?
+let alpha = ['A'-'Z' 'a'-'z'] 
 let digit = ['0' - '9']
-let id = alpha + (alpha digit)*
+let id = (alpha ['_']?)+ ((alpha ['_']?)digit)*
+let asciichar = ['0'-'9']['0'-'9']?['0'-'9']?
 
 rule token = parse
   | spaces          { token lexbuf }
@@ -76,14 +77,11 @@ rule token = parse
 
 and lex_string buf =
   parse
-  | '"'       { STRING (Buffer.contents buf) }
-  | '\\' '/'  { Buffer.add_char buf '/'; lex_string buf lexbuf }
-  | '\\' '\\' { Buffer.add_char buf '\\'; lex_string buf lexbuf }
-  | '\\' 'b'  { Buffer.add_char buf '\b'; lex_string buf lexbuf }
-  | '\\' 'f'  { Buffer.add_char buf '\012'; lex_string buf lexbuf }
-  | '\\' 'n'  { Buffer.add_char buf '\n'; lex_string buf lexbuf }
-  | '\\' 'r'  { Buffer.add_char buf '\r'; lex_string buf lexbuf }
-  | '\\' 't'  { Buffer.add_char buf '\t'; lex_string buf lexbuf }
+  | '"'                       { STRING (Buffer.contents buf) }
+  | '\\' 'n'                  { Buffer.add_char buf '\n'; lex_string buf lexbuf }
+  | '\\' 't'                  { Buffer.add_char buf '\t'; lex_string buf lexbuf }
+  | '\\' (asciichar as lxm)   { Buffer.add_char buf (char_of_int (int_of_string lxm)); lex_string buf lexbuf }
+  | '\\' '\\'                 { Buffer.add_char buf '\\'; lex_string buf lexbuf }
   | [^ '"' '\\']+
     { 
       Buffer.add_string buf (Lexing.lexeme lexbuf);
@@ -93,6 +91,7 @@ and lex_string buf =
         illegal_character (Location.curr_loc lexbuf) (L.lexeme_char lexbuf 0) 
       }
   | eof { unterminated_string (Location.curr_loc lexbuf) }
+
 
 and lex_comment depth = parse
     | "/*" { lex_comment (depth + 1) lexbuf }
