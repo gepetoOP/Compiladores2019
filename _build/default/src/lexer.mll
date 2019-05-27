@@ -82,6 +82,7 @@ and lex_string buf =
   | '\\' 't'                  { Buffer.add_char buf '\t'; lex_string buf lexbuf }
   | '\\' (asciichar as lxm)   { Buffer.add_char buf (char_of_int (int_of_string lxm)); lex_string buf lexbuf }
   | '\\' '\\'                 { Buffer.add_char buf '\\'; lex_string buf lexbuf }
+  | '\\' '^' (alpha as lxm)   { Buffer.add_string buf (",Control caracter: " ^ String.make 1 lxm); lex_string buf lexbuf }
   | [^ '"' '\\']+
     { 
       Buffer.add_string buf (Lexing.lexeme lexbuf);
